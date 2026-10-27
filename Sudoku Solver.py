@@ -13,7 +13,5 @@ for i in range (9):
 print (Puzzle[8,])
 class Methods:
     def getBox(row,column):
-        return math.ceil(((row + 1)/3 + (column + 1)/3)/2)
+        return math.ceil((row + 1)/3) + (column + 1)
 
-
-print (Methods.getBox(0,0))
