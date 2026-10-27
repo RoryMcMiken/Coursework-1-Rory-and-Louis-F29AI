@@ -1,17 +1,6 @@
 (define (domain lunar)
     (:requirements :strips :typing)
 
-    ; -------------------------------
-    ; Types
-    ; -------------------------------
-
-    ; EXAMPLE
-
-    ; (:types
-    ;     parent_type
-    ;     child_type - parent_type
-
-    ; )
     (:types
         Rover Lander Waypoint Collectable - object
         Data Sample - Collectable
@@ -25,6 +14,7 @@
 
         (Rover-Ownership ?lander - Lander ?rover - Rover) ;; Lets the rover know which lander it is connected to
         (Rover-Stored ?rover - Rover) ;; Lets the rover know if it is still stored in a lander
+        (Lander-not-Landed ?lander - Lander) ;; Checks if the Lander has landed yet so it can't land in multiple locations
 
         (Lander-Sample-Space-Free  ?lander - Lander) ;; Checks if the landers can accept a sample
         (Rover-Memory-Free ?rover - Rover) ;; Checks if a rover can collect another photo or scan
@@ -37,24 +27,6 @@
         (Rover-Data-Stored ?rover - Rover ?data - Data) ;; Checks if Data is already stored in a rover. The opposite of Rover-Memory-Free
         (Rover-Sample-Stored ?rover - Rover ?sample - Sample) ;; Checks if a sample is stored in a rover. The opposite of Rover-Sample-Space-Free
     )
-
-    ; -------------------------------
-    ; Actions
-    ; -------------------------------
-
-    ; EXAMPLE
-
-    ; (:action action-template
-    ;     :parameters (?p - parameter_type)
-    ;     :precondition (and
-    ;         (one_arity_predicate ?p)
-    ;     )
-    ;     :effect 
-    ;     (and 
-    ;         (no_arity_predicate)
-    ;         (not (one_arity_predicate ?p))
-    ;     )
-    ; )
 
     (:action Move
         :parameters (?rover - Rover ?from - Waypoint ?to - Waypoint)
@@ -74,6 +46,14 @@
                      (not (Rover-Stored ?rover)))
     )
 
+    (:action Land-Lander
+        :parameters (?lander - Lander ?location - Waypoint)
+        :precondition (Lander-not-Landed ?lander)
+        :effect (and (not (Lander-not-Landed ?lander))
+                     (Lander-Location ?lander ?location))
+    )
+    
+
     (:action Capture-Data
         :parameters (?rover - Rover ?data - Data ?location - Waypoint)
         :precondition (and (Collectable-Location ?data ?location)
@@ -84,7 +64,7 @@
                      (Rover-Data-Stored ?rover ?data))
     )
     
-        (:action Collect-Sample
+    (:action Collect-Sample
         :parameters (?rover - Rover ?sample - Sample ?location - Waypoint)
         :precondition (and (Collectable-Location ?sample ?location)
                            (Rover-Sample-Space-Free ?rover)
@@ -104,18 +84,15 @@
     )
 
     (:action Deposit-Sample
-        :parameters (?rover - Rover ?lander - Lander ?sample - Sample ?Location - Waypoint)
+        :parameters (?rover - Rover ?lander - Lander ?sample - Sample ?location - Waypoint)
         :precondition (and (Rover-Location ?rover ?location)
                            (Lander-Location ?lander ?location)
                            (Rover-Ownership ?lander ?rover)
                            (Rover-Sample-Stored ?rover ?sample)
                            (Lander-Sample-Space-Free ?lander))
-        :effect (and (not (Rover-Sample-Space-Free ?rover))
+        :effect (and (not (Lander-Sample-Space-Free ?lander))
                      (not (Rover-Sample-Stored ?rover ?sample))
                      (Sample-Deposited ?sample ?lander)
                      (Rover-Sample-Space-Free  ?rover))
     )
-    
-    
-
 )
