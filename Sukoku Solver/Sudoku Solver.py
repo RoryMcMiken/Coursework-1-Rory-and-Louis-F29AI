@@ -2,7 +2,6 @@ import sys
 
 size = 9
 box_size = 3
-digits = set(range(1, 10))
 
 def read_sudoku(Sudoku_problem):
     # Read the Sudoku puzzle from a text file.
