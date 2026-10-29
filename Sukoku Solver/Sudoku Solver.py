@@ -1,13 +1,13 @@
-import sys
+from pathlib import Path
 
 size = 9
 box_size = 3
 
-def read_sudoku(Sudoku_problem):
+def read_sudoku(Sudoku_Problem):
     # Read the Sudoku puzzle from a text file.
     grid = []
 
-    with open(Sudoku_problem, "r", encoding="utf-8") as file:
+    with open(Sudoku_Problem, "r", encoding="utf-8") as file:
         for line in file:
             line = line.strip()
 
@@ -123,11 +123,7 @@ def print_sudoku(grid):
         print(" ".join(parts))
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python sudoku_solver.py <puzzle_file.txt>")
-        return
-
-    filename = sys.argv[1]
+    filename = Path(__file__).resolve().parent / "Sudoku_Problem.txt"
 
     try:
         grid = read_sudoku(filename)
